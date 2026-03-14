@@ -2,6 +2,20 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWebRTC } from '../hooks/useWebRTC';
 
+function playJoinSound() {
+  const ctx = new AudioContext();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = 'sine';
+  osc.frequency.value = 520;
+  gain.gain.value = 0.3;
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+  osc.stop(ctx.currentTime + 0.6);
+}
+
 export default function Room() {
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -11,6 +25,23 @@ export default function Room() {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const [copied, setCopied] = useState(false);
+  const prevStatus = useRef(status);
+
+  // Request notification permission when entering the room
+  useEffect(() => {
+    if (Notification.permission === 'default') Notification.requestPermission();
+  }, []);
+
+  // Notify when someone joins
+  useEffect(() => {
+    if (prevStatus.current === 'waiting' && status === 'connecting') {
+      playJoinSound();
+      if (Notification.permission === 'granted') {
+        new Notification('Someone joined your call', { body: 'Connecting now…' });
+      }
+    }
+    prevStatus.current = status;
+  }, [status]);
 
   useEffect(() => {
     if (localVideoRef.current && localStream) localVideoRef.current.srcObject = localStream;
