@@ -25,42 +25,41 @@ brew install cloudflare/cloudflare/cloudflared
 Install all dependencies (runs once):
 
 ```bash
-npm install
+make install
 ```
 
 ---
 
 ## Running the app
 
-**Step 1 — Start the dev servers:**
+### With a quick tunnel (no account, URL changes each time)
 
 ```bash
-npm run dev
+make start
 ```
 
-This starts two processes in parallel:
-- Signaling server on `http://localhost:3001`
-- React app (Vite) on `http://localhost:5173`
+Starts the app and a temporary Cloudflare tunnel. The public URL is printed in the terminal — share it with the person you want to call.
 
-Open `http://localhost:5173` in your browser to use the app locally.
-
-**Step 2 — Expose it publicly (so others can join your call):**
-
-In a separate terminal:
+### With a named tunnel (permanent URL, requires a Cloudflare account)
 
 ```bash
-cloudflared tunnel --url http://localhost:5173
+make start-named TUNNEL_TOKEN=your_token_here
 ```
 
-Cloudflare will print a public HTTPS URL like:
+Uses a pre-configured named tunnel so the URL never changes between sessions. To set up a named tunnel, see the [Cloudflare Tunnel docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/).
 
+### Stop all services
+
+```bash
+make stop
 ```
-https://some-words-here.trycloudflare.com
+
+### Run services individually
+
+```bash
+make dev      # app only (no tunnel), available at http://localhost:5173
+make tunnel   # quick tunnel only
 ```
-
-Share this URL with the person you want to call. They open it in any browser (including mobile) and the call starts automatically.
-
-> The URL changes every time you restart the tunnel. Keep the terminal open for the duration of your call.
 
 ---
 
@@ -69,7 +68,8 @@ Share this URL with the person you want to call. They open it in any browser (in
 1. You open the app and click **Start a Call** — this creates a room with a unique ID and shows your camera while waiting.
 2. Click **Copy Link** to copy the room URL, then share it.
 3. When the other person opens the link, the WebRTC handshake triggers automatically.
-4. After a brief "Connecting…" phase, both sides see and hear each other. Video/audio flows peer-to-peer — your server is no longer in the loop.
+4. You hear a chime and get a browser notification when they join.
+5. After a brief "Connecting…" phase, both sides see and hear each other. Video/audio flows peer-to-peer — your server is no longer in the loop.
 
 ### Call controls
 
@@ -85,17 +85,18 @@ Share this URL with the person you want to call. They open it in any browser (in
 
 ```
 video-app/
-├── package.json              # Root — npm workspaces, runs both servers
+├── Makefile                  # start, stop, dev, tunnel targets
+├── package.json              # Root — npm workspaces + concurrently
 ├── server/
 │   └── index.js              # Signaling server (Express + Socket.IO)
 └── client/
-    ├── vite.config.js        # Vite config — proxies /socket.io to port 3001
+    ├── vite.config.js        # Proxies /socket.io to port 3001
     └── src/
         ├── hooks/
         │   └── useWebRTC.js  # All WebRTC + signaling logic
         └── pages/
             ├── Home.jsx      # "Start a Call" screen
-            └── Room.jsx      # Active call screen
+            └── Room.jsx      # Active call screen + join notifications
 ```
 
 ---
@@ -106,4 +107,5 @@ video-app/
 - **STUN servers** (Google's free public servers) handle NAT traversal for most home networks.
 - **TURN servers** are not included. Calls may fail on strict corporate/university networks. For personal use between home connections this is rarely an issue.
 - The signaling server only relays connection metadata (SDP offers/answers and ICE candidates). It never touches your audio or video.
+- Audio and video are end-to-end encrypted via DTLS-SRTP (mandatory in the WebRTC spec).
 - Maximum room size is 2 participants.
