@@ -1,0 +1,213 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  height: 100dvh;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  height: 100%;
+}
+
+/* ── Shared ── */
+
+.centered {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px;
+  text-align: center;
+}
+
+.btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: opacity 0.15s, transform 0.1s;
+  padding: 13px 28px;
+  touch-action: manipulation;
+}
+
+.btn:active {
+  opacity: 0.75;
+  transform: scale(0.97);
+}
+
+/* ── Home ── */
+
+.home-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.home-sub {
+  color: #888;
+  font-size: 1rem;
+}
+
+.primary-btn {
+  background: #6c63ff;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 16px 40px;
+  margin-top: 8px;
+  min-width: 180px;
+}
+
+/* ── Room ── */
+
+.room {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #111;
+}
+
+.remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Picture-in-picture local video */
+.local-video {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 100px;
+  height: 133px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: #1a1a1a;
+  z-index: 10;
+}
+
+@media (min-width: 480px) {
+  .local-video {
+    width: 160px;
+    height: 120px;
+  }
+}
+
+/* Waiting / setup overlay */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  padding: 24px;
+}
+
+.card {
+  background: #1c1c28;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 32px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 340px;
+  width: 100%;
+}
+
+.card p {
+  color: #ccc;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.copy-btn {
+  background: #6c63ff;
+  color: #fff;
+  min-width: 150px;
+}
+
+/* "Connecting…" pill */
+.status-pill {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #ccc;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+/* Controls bar */
+.controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  /* Respect iPhone home indicator */
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+  z-index: 10;
+}
+
+.ctrl-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-width: 85px;
+  font-size: 0.9rem;
+}
+
+/* Active state when muted / cam off */
+.ctrl-btn.off {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.end-btn {
+  background: #dc3545 !important;
+  border-color: transparent !important;
+  min-width: 70px;
+}
+
+/* ── Error / Ended screens ── */
+
+.error-msg {
+  color: #ff6b6b;
+  font-size: 1rem;
+  max-width: 320px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.ended-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
